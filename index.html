@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi des Dépenses | Leanne & Andrea</title>
+    <style>
+        :root {
+            /* Colori Light Mode - Palette abbinata: Indigo (Primary) + Teal (Courses) + Amber (Resto) */
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+
+            --spesa: #0d9488;
+            --resto: #d97706;
+
+            --bg-gradient: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+            --card-bg: #FFFFFF;
+            --card-border: #E5E7EB;
+
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+
+            --input-bg: #FFFFFF;
+            --input-border: #D1D5DB;
+
+            --th-bg: #F9FAFB;
+
+            --spesa-badge-bg: #ccfbf1;
+            --spesa-badge-text: #0f766e;
+
+            --resto-badge-bg: #fef3c7;
+            --resto-badge-text: #b45309;
+
+            --primary-badge-bg: #e0e7ff;
+            --primary-badge-text: #3730a3;
+
+            --stat-bg: #F9FAFB;
+            --stat-border: #f3f4f6;
+
+            --btn-danger-bg: #FEE2E2;
+            --btn-danger-text: #EF4444;
+            --btn-danger-hover: #EF4444;
+            --btn-danger-hover-text: #FFFFFF;
+        }
+
+        /* Dark Mode Media Query - Si attiva automaticamente in base alle preferenze di sistema */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #818cf8;
+                --primary-hover: #6366f1;
+
+                --spesa: #2dd4bf;
+                --resto: #fbbf24;
+
+                --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                --card-bg: #1e293b;
+                --card-border: #334155;
+
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --border-color: #334155;
+
+                --input-bg: #0f172a;
+                --input-border: #475569;
+
+                --th-bg: #0f172a;
+
+                --spesa-badge-bg: rgba(45, 212, 191, 0.15);
+                --spesa-badge-text: #5eead4;
+
+                --resto-badge-bg: rgba(251, 191, 36, 0.15);
+                --resto-badge-text: #fcd34d;
+
+                --primary-badge-bg: rgba(99, 102, 241, 0.15);
+                --primary-badge-text: #818cf8;
+
+                --stat-bg: #0f172a;
+                --stat-border: #1e293b;
+
+                --btn-danger-bg: rgba(239, 68, 68, 0.15);
+                --btn-danger-text: #f87171;
+                --btn-danger-hover: #ef4444;
+                --btn-danger-hover-text: #ffffff;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+            min-height: 100vh;
+            transition: background 0.3s ease;
+        }
+
+        /* Layout Principale a 3 Colonne */
+        .main-wrapper {
+            display: flex;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1400px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .section-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--card-border);
+            transition: background 0.3s ease, border 0.3s ease;
+        }
+
+        .left-panel {
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+        }
+
+        .center-panel {
+            flex: 2;
+            min-width: 400px;
+        }
+
+        .right-panel {
+            flex: 1;
+            min-width: 320px;
+            max-width: 380px;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 1.15rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .input-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        input,
+        select {
+            padding: 0.75rem;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            color-scheme: light dark;
+            /* Supporto calendario scuro */
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--th-bg);
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        th:first-child {
+            border-top-left-radius: 8px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 8px;
+        }
+
+        td {
+            font-size: 0.95rem;
+        }
+
+        .tag-badge {
+            background-color: var(--primary-badge-bg);
+            color: var(--primary-badge-text);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .category-badge {
+            padding: 0.35rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-spesa {
+            background-color: var(--spesa-badge-bg);
+            color: var(--spesa-badge-text);
+        }
+
+        .badge-resto {
+            background-color: var(--resto-badge-bg);
+            color: var(--resto-badge-text);
+        }
+
+        .totals-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .totals-category {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.25rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s;
+        }
+
+        .totals-category:hover {
+            transform: translateY(-2px);
+        }
+
+        .totals-category h4 {
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .cat-spesa h4,
+        .cat-spesa .person-stat strong {
+            color: var(--spesa);
+        }
+
+        .cat-resto h4,
+        .cat-resto .person-stat strong {
+            color: var(--resto);
+        }
+
+        .cat-general {
+            background: var(--stat-bg);
+            border: 1px dashed var(--border-color);
+            box-shadow: none;
+        }
+
+        .cat-general h4,
+        .cat-general .person-stat strong {
+            color: var(--primary);
+        }
+
+        .totals-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .person-stat {
+            background: var(--stat-bg);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--stat-border);
+        }
+
+        .cat-general .person-stat {
+            background: var(--card-bg);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--border-color);
+        }
+
+        .person-stat span {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .person-stat strong {
+            font-size: 1.35rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delete-btn {
+            background-color: var(--btn-danger-bg);
+            color: var(--btn-danger-text);
+            border: none;
+            padding: 0.4rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0;
+            width: auto;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background-color: var(--btn-danger-hover);
+            color: var(--btn-danger-hover-text);
+        }
+
+        /* Adjust for smaller screens just in case */
+        @media (max-width: 992px) {
+            .main-wrapper {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .left-panel,
+            .center-panel,
+            .right-panel {
+                max-width: 100%;
+                flex: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-wrapper">
+
+        <!-- LEFT PANEL: INPUT -->
+        <div class="section-card left-panel">
+            <h2>Nouvelle Dépense</h2>
+
+            <div class="input-grid">
+                <div class="form-group">
+                    <label for="dateInput">Date</label>
+                    <input type="date" id="dateInput" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="amountInput">Montant (€)</label>
+                    <input type="number" id="amountInput" step="0.01" min="0" placeholder="Ex: 45.75" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="categoryInput">Catégorie</label>
+                    <select id="categoryInput">
+                        <option value="Courses">Courses</option>
+                        <option value="Restaurant">Restaurant</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tagInput">Payé par</label>
+                    <select id="tagInput">
+                        <option value="Leanne">Leanne</option>
+                        <option value="Andrea">Andrea</option>
+                    </select>
+                </div>
+            </div>
+
+            <button onclick="addExpense()">+ Ajouter la dépense</button>
+        </div>
+
+        <!-- CENTER PANEL: TABLE -->
+        <div class="section-card center-panel">
+            <h2>Historique</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Catégorie</th>
+                            <th>Montant</th>
+                            <th>Payé par</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: TOTALS -->
+        <div class="section-card right-panel">
+            <h3>Résumé par Catégorie</h3>
+
+            <div class="totals-section">
+                <!-- Courses (Spesa) -->
+                <div class="totals-category cat-spesa">
+                    <h4>🛒 Tot. Courses</h4>
+                    <div class="totals-row">
+                        <div class="person-stat">
+                            <span>Leanne</span>
+                            <strong id="spesaLeanne">0,00 €</strong>
+                        </div>
+                        <div class="person-stat">
+                            <span>Andrea</span>
+                            <strong id="spesaAndrea">0,00 €</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Restaurant (Resto) -->
+                <div class="totals-category cat-resto">
+                    <h4>🍽️ Tot. Restaurant</h4>
+                    <div class="totals-row">
+                        <div class="person-stat">
+                            <span>Leanne</span>
+                            <strong id="restoLeanne">0,00 €</strong>
+                        </div>
+                        <div class="person-stat">
+                            <span>Andrea</span>
+                            <strong id="restoAndrea">0,00 €</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- General -->
+                <div class="totals-category cat-general">
+                    <h4>📊 Tot. Général</h4>
+                    <div class="totals-row">
+                        <div class="person-stat">
+                            <span>Leanne</span>
+                            <strong id="genLeanne">0,00 €</strong>
+                        </div>
+                        <div class="person-stat">
+                            <span>Andrea</span>
+                            <strong id="genAndrea">0,00 €</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let expenses = [];
+
+        // Set today's date automatically
+        document.getElementById('dateInput').valueAsDate = new Date();
+
+        // Load from local storage on page load
+        const savedData = localStorage.getItem('expensesData');
+        if (savedData) {
+            expenses = JSON.parse(savedData);
+            updateUI();
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('expensesData', JSON.stringify(expenses));
+        }
+
+        function addExpense() {
+            const date = document.getElementById('dateInput').value;
+            const amount = parseFloat(document.getElementById('amountInput').value);
+            const category = document.getElementById('categoryInput').value;
+            const tag = document.getElementById('tagInput').value;
+
+            if (!date || isNaN(amount) || amount <= 0) {
+                alert("Veuillez entrer une date valide et un montant supérieur à 0.");
+                return;
+            }
+
+            const id = Date.now().toString();
+            expenses.push({ id, date, amount, category, tag });
+
+            saveToLocalStorage();
+
+            // Reset amount input
+            document.getElementById('amountInput').value = '';
+
+            updateUI();
+        }
+
+        function deleteExpense(id) {
+            if (confirm('Voulez-vous vraiment supprimer cette dépense ?')) {
+                expenses = expenses.filter(exp => exp.id !== id);
+                saveToLocalStorage();
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            let spesaLeanne = 0, spesaAndrea = 0;
+            let restoLeanne = 0, restoAndrea = 0;
+            let genLeanne = 0, genAndrea = 0;
+
+            // Sort expenses by date (newest first)
+            const sortedExpenses = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            sortedExpenses.forEach(exp => {
+                // Assign ID if missing (for legacy data)
+                if (!exp.id) {
+                    exp.id = Math.random().toString(36).substr(2, 9);
+                }
+
+                // Calculate totals
+                if (exp.category === 'Courses') {
+                    if (exp.tag === 'Leanne') spesaLeanne += exp.amount;
+                    if (exp.tag === 'Andrea') spesaAndrea += exp.amount;
+                } else if (exp.category === 'Restaurant') {
+                    if (exp.tag === 'Leanne') restoLeanne += exp.amount;
+                    if (exp.tag === 'Andrea') restoAndrea += exp.amount;
+                }
+
+                if (exp.tag === 'Leanne') genLeanne += exp.amount;
+                if (exp.tag === 'Andrea') genAndrea += exp.amount;
+
+                // Format date (DD/MM/YYYY)
+                const dateObj = new Date(exp.date);
+                const formattedDate = dateObj.toLocaleDateString('fr-FR');
+
+                // Format amount
+                const formattedAmount = exp.amount.toFixed(2).replace('.', ',');
+
+                // Badge class
+                let badgeClass = "category-badge";
+                if (exp.category === "Courses") badgeClass += " badge-spesa";
+                else if (exp.category === "Restaurant") badgeClass += " badge-resto";
+
+                // Add row
+                tbody.innerHTML += `
+                <tr style="animation: fadeIn 0.3s ease-in-out;">
+                    <td>${formattedDate}</td>
+                    <td><span class="${badgeClass}">${exp.category}</span></td>
+                    <td><strong>${formattedAmount} €</strong></td>
+                    <td><span class="tag-badge">${exp.tag}</span></td>
+                    <td><button class="delete-btn" onclick="deleteExpense('${exp.id}')">✕</button></td>
+                </tr>
+            `;
+            });
+
+            // Update displays
+            document.getElementById('spesaLeanne').innerText = spesaLeanne.toFixed(2).replace('.', ',') + ' €';
+            document.getElementById('spesaAndrea').innerText = spesaAndrea.toFixed(2).replace('.', ',') + ' €';
+
+            document.getElementById('restoLeanne').innerText = restoLeanne.toFixed(2).replace('.', ',') + ' €';
+            document.getElementById('restoAndrea').innerText = restoAndrea.toFixed(2).replace('.', ',') + ' €';
+
+            document.getElementById('genLeanne').innerText = genLeanne.toFixed(2).replace('.', ',') + ' €';
+            document.getElementById('genAndrea').innerText = genAndrea.toFixed(2).replace('.', ',') + ' €';
+
+        }
+    </script>
+</body>
+
+</html>
